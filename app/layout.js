@@ -3,7 +3,7 @@ import "./globals.css";
 export const metadata = {
   title: "PathYatra Partner — Early Access for Bus Owners",
   description:
-    "PathYatra Partner App — No paper tickets, no cash leakage. Register for early access and get 6 months zero commission for the first 100 bus owners.",
+    "PathYatra Partner App — No paper tickets, no cash leakage. Register for early access and get 3 months zero commission for the first 100 bus owners.",
   icons: {
     icon: "/logo.jpeg",
     apple: "/logo.jpeg",
