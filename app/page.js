@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { translations } from "../lib/translations";
 import { supabase } from "../lib/supabaseClient";
 
@@ -45,6 +45,40 @@ const SOCIALS = [
   },
 ];
 
+function HeroText({ t, onApply }) {
+  return (
+    <div>
+      <span className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-3.5 py-1.5 text-[10px] font-semibold uppercase tracking-wider backdrop-blur-sm sm:text-xs">
+        <span className="h-1.5 w-1.5 rounded-full bg-accent" />
+        {t.hero.badge}
+      </span>
+
+      <h1 className="mt-4 text-[1.75rem] font-extrabold leading-[1.1] tracking-tight [text-wrap:balance] drop-shadow-lg sm:text-4xl lg:text-5xl xl:text-[3.25rem]">
+        {t.hero.heading}
+      </h1>
+
+      <div className="mt-4 h-1 w-16 rounded-full bg-accent" />
+
+      <p className="mt-4 max-w-lg text-sm leading-relaxed text-white/85 drop-shadow sm:text-base lg:text-lg">
+        {t.hero.sub}
+      </p>
+
+      <div className="mt-7 flex flex-col gap-3.5 sm:flex-row sm:items-center sm:gap-5">
+        <button
+          onClick={onApply}
+          className="rounded-full bg-accent px-7 py-3.5 text-base font-bold text-slate-900 shadow-xl shadow-black/30 transition hover:brightness-110 active:scale-[0.98] sm:px-8 sm:py-4 sm:text-lg"
+        >
+          {t.hero.cta}
+        </button>
+        <span className="flex items-start gap-2 text-[13px] text-white/85 sm:text-sm">
+          <span className="mt-0.5">🏆</span>
+          <span>{t.hero.trust}</span>
+        </span>
+      </div>
+    </div>
+  );
+}
+
 function inputCls(error) {
   return `w-full rounded-xl border px-4 py-3 text-slate-800 outline-none transition focus:ring-2 focus:ring-brand/40 ${
     error ? "border-red-400 bg-red-50" : "border-slate-300 focus:border-brand"
@@ -64,6 +98,14 @@ function Field({ label, error, children }) {
 export default function Home() {
   const [lang, setLang] = useState("en");
   const t = translations[lang];
+
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 40);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   const [form, setForm] = useState({
     full_name: "",
@@ -156,23 +198,45 @@ export default function Home() {
 
   return (
     <main className="min-h-screen">
-      {/* Header */}
-      <header className="sticky top-0 z-30 bg-white/80 backdrop-blur border-b border-slate-200">
-        <div className="mx-auto max-w-6xl px-5 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-2.5 font-extrabold text-brand-dark text-xl">
-            <img src="/logo.jpeg" alt="PathYatra" className="h-12 w-12 rounded-xl object-cover shadow-sm" />
-            PathYatra <span className="text-brand">Partner</span>
+      {/* Header — floats over the banner, turns solid on scroll */}
+      <header
+        className={`fixed inset-x-0 top-0 z-40 transition-colors duration-300 ${
+          scrolled
+            ? "bg-white/90 backdrop-blur border-b border-slate-200"
+            : "bg-gradient-to-b from-black/55 to-transparent"
+        }`}
+      >
+        <div className="flex items-center justify-between px-4 py-3 sm:px-6 lg:px-10">
+          <div
+            className={`flex items-center gap-2.5 text-lg font-extrabold sm:text-xl ${
+              scrolled ? "text-brand-dark" : "text-white drop-shadow"
+            }`}
+          >
+            <img
+              src="/logo.jpeg"
+              alt="PathYatra"
+              className="h-11 w-11 rounded-xl object-cover shadow-md sm:h-12 sm:w-12"
+            />
+            PathYatra <span className={scrolled ? "text-brand" : "text-accent"}>Partner</span>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <button
               onClick={() => setLang(lang === "en" ? "hi" : "en")}
-              className="text-sm font-semibold px-3 py-1.5 rounded-full border border-slate-300 hover:border-brand hover:text-brand transition"
+              className={`rounded-full border px-3 py-1.5 text-sm font-semibold transition ${
+                scrolled
+                  ? "border-slate-300 text-slate-700 hover:border-brand hover:text-brand"
+                  : "border-white/40 bg-white/10 text-white backdrop-blur-sm hover:bg-white/20"
+              }`}
             >
               {t.langLabel}
             </button>
             <button
               onClick={scrollToForm}
-              className="hidden sm:inline-flex bg-brand hover:bg-brand-dark text-white text-sm font-semibold px-4 py-2 rounded-full transition"
+              className={`hidden rounded-full px-4 py-2 text-sm font-bold transition sm:inline-flex ${
+                scrolled
+                  ? "bg-brand text-white hover:bg-brand-dark"
+                  : "bg-accent text-slate-900 shadow-lg hover:brightness-110"
+              }`}
             >
               {t.nav.apply}
             </button>
@@ -180,29 +244,28 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-brand-dark via-brand to-brand-light text-white">
-        <div className="mx-auto max-w-6xl px-5 py-16 sm:py-24">
-          <span className="inline-flex items-center gap-2 bg-white/15 text-white text-xs font-semibold px-3 py-1.5 rounded-full mb-6">
-            🔥 {t.hero.badge}
-          </span>
-          <h1 className="text-3xl sm:text-5xl font-extrabold leading-tight max-w-3xl">
-            {t.hero.heading}
-          </h1>
-          <p className="mt-5 text-base sm:text-lg text-white/90 max-w-2xl">
-            {t.hero.sub}
-          </p>
-          <div className="mt-8 flex flex-col sm:flex-row gap-4 sm:items-center">
-            <button
-              onClick={scrollToForm}
-              className="bg-accent hover:brightness-110 text-slate-900 font-bold px-7 py-3.5 rounded-full shadow-lg transition text-lg"
-            >
-              {t.hero.cta}
-            </button>
-            <span className="text-sm text-white/85 flex items-center gap-2">
-              🏆 {t.hero.trust}
-            </span>
+      {/* Hero — full banner, never cropped. Text overlays from the far left. */}
+      <section className="relative isolate bg-slate-950 text-white">
+        {/* Banner shown in full (aspect ratio preserved, nothing cut off) */}
+        <img
+          src="/banner.jpg"
+          alt="PathYatra bus on highway at sunrise"
+          className="block w-full"
+        />
+
+        {/* Desktop / tablet: text overlaid on the left of the image */}
+        <div className="pointer-events-none absolute inset-x-0 top-0 bottom-[30%] hidden md:block">
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/85 via-slate-950/45 to-transparent" />
+          <div className="relative flex h-full items-center">
+            <div className="pointer-events-auto w-[54%] max-w-3xl pl-5 pr-5 lg:pl-9 xl:pl-12">
+              <HeroText t={t} onApply={scrollToForm} />
+            </div>
           </div>
+        </div>
+
+        {/* Mobile: text sits directly below the banner so nothing is cropped */}
+        <div className="bg-slate-950 px-5 pb-12 pt-8 md:hidden">
+          <HeroText t={t} onApply={scrollToForm} />
         </div>
       </section>
 

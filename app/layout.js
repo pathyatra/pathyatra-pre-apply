@@ -13,7 +13,7 @@ export const metadata = {
     description:
       "Make your bus transport business 100% smart and transparent. Early access registration open.",
     type: "website",
-    images: ["/logo.jpeg"],
+    images: ["/banner.jpg"],
   },
 };
 
