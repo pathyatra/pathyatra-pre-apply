@@ -57,6 +57,44 @@ the anon key). The admin panel reads through a server-only API route
 (`app/api/admin/list`) that uses the `service_role` key — this key lives only on the
 server and is never sent to the browser. Access is gated by `ADMIN_PASSWORD`.
 
+## SEO
+
+On-page SEO is already built in:
+
+- `app/layout.js` — page title, meta description (~155 chars), canonical URL, keywords,
+  robots directives, OpenGraph + Twitter card (banner image), theme colour, favicon.
+- `app/layout.js` also embeds JSON-LD structured data (Organization, WebSite, WebPage,
+  SoftwareApplication) including your social profile links, so Google can connect the
+  brand to your Instagram / YouTube / X / Facebook accounts.
+- `app/robots.js` → serves `/robots.txt` (allows the site, blocks `/admin` and `/api`).
+- `app/sitemap.js` → serves `/sitemap.xml`.
+- `app/admin/layout.js` — marks the admin panel `noindex, nofollow`.
+
+The site URL used for canonical/sitemap defaults to `https://pathyatra.com`. To change it,
+set `NEXT_PUBLIC_SITE_URL` in Vercel's Environment Variables.
+
+### Getting Google to show title + description
+
+Code alone does not put a site in Google — it must be submitted and crawled:
+
+1. Go to https://search.google.com/search-console and add your domain as a property
+   (Domain property → `pathyatra.com` → add the TXT record it gives you at your
+   registrar's DNS, same place you added the Vercel records).
+2. Once verified, open **Sitemaps**, enter `sitemap.xml`, and submit.
+3. Open **URL Inspection**, paste `https://pathyatra.com/`, then click
+   **Request Indexing**. Repeat after any big content change.
+4. Also add the site to Bing: https://www.bing.com/webmasters (one-click import from
+   Google Search Console).
+
+Re-crawling usually takes a few days to two weeks. Until then the old bare-URL listing
+may still show.
+
+### Checking your work
+
+- Structured data: https://search.google.com/test/rich-results
+- Social preview: paste the URL into WhatsApp or https://www.opengraph.xyz
+- Speed / SEO score: https://pagespeed.web.dev
+
 ## 3. Deploy to Vercel
 
 1. Push this folder to a GitHub repo.
